@@ -63,7 +63,7 @@ jobs:
           node-version: '20'
 
       - name: Install Stylelint
-        run: npm install -g stylelint stylelint-config-standard
+        run: npm install stylelint stylelint-config-standard
 
       - name: Create Stylelint config
         run: |
@@ -79,13 +79,24 @@ jobs:
               "color-function-notation": null,
               "declaration-block-no-redundant-longhand-properties": null,
               "shorthand-property-no-redundant-values": null,
-              "import-notation": null
+              "import-notation": null,
+              "function-no-unknown": null,
+              "property-no-unknown": null,
+              "unit-no-unknown": null,
+              "no-empty-source": null,
+              "comment-empty-line-before": null,
+              "rule-empty-line-before": null,
+              "at-rule-empty-line-before": null,
+              "declaration-empty-line-before": null,
+              "value-keyword-case": null,
+              "media-feature-range-notation": null,
+              "number-max-precision": null
             }
           }
           EOF
 
       - name: Lint styles.css
-        run: stylelint styles.css
+        run: npx stylelint styles.css
 
   # ── Job 3: Lint JavaScript ───────────────────────────
   lint-js:

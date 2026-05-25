@@ -95,7 +95,7 @@ function scheduleMelody() {
 
 function stopMelody() {
   clearTimeout(loopTimer); loopTimer = null;
-  oscList.forEach(o => { try { o.stop(); } catch(e){} });
+  oscList.forEach(o => { try { o.stop(); } catch(_e){} });
   oscList = [];
 }
 
