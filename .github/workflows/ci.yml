@@ -76,6 +76,7 @@ jobs:
               "import-notation": null,
               "function-no-unknown": null,
               "property-no-unknown": null,
+              "property-no-vendor-prefix": null
               "unit-no-unknown": null,
               "no-empty-source": null,
               "comment-empty-line-before": null,
