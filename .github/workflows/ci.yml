@@ -1,0 +1,103 @@
+name: CI — Validate & Lint
+
+on:
+  push:
+    branches: ["**"]          # runs on every branch you push
+  pull_request:
+    branches: [main]          # runs when a PR targets main
+  workflow_dispatch:          # adds manual Run button in GitHub UI
+
+jobs:
+
+  # ── Job 1: Validate HTML ─────────────────────────────
+  validate-html:
+    name: Validate HTML
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install html-validate
+        run: npm install -g html-validate
+
+      - name: Validate index.html
+        run: html-validate index.html
+
+  # ── Job 2: Lint CSS ──────────────────────────────────
+  lint-css:
+    name: Lint CSS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Stylelint
+        run: npm install -g stylelint stylelint-config-standard
+
+      - name: Create Stylelint config
+        run: |
+          echo '{"extends":["stylelint-config-standard"]}' > .stylelintrc.json
+
+      - name: Lint styles.css
+        run: stylelint styles.css
+
+  # ── Job 3: Lint JavaScript ───────────────────────────
+  lint-js:
+    name: Lint JavaScript
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install ESLint
+        run: npm install -g eslint @eslint/js
+
+      - name: Create ESLint config
+        run: |
+          cat > eslint.config.mjs << 'EOF'
+          import js from "@eslint/js";
+          export default [
+            js.configs.recommended,
+            { rules: { "no-unused-vars": "warn", "no-undef": "warn" } }
+          ];
+          EOF
+
+      - name: Lint app.js
+        run: eslint app.js
+
+  # ── Job 4: Check all 3 files exist ───────────────────
+  check-files:
+    name: Check required files
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify index.html, styles.css, app.js exist
+        run: |
+          for f in index.html styles.css app.js; do
+            if [ ! -f "$f" ]; then
+              echo "MISSING: $f"
+              exit 1
+            else
+              echo "OK: $f ($(wc -c < $f) bytes)"
+            fi
+          done
