@@ -15,7 +15,7 @@
 <div id="music-player" onclick="toggleMusic()">
   <span id="music-icon">🎵</span>
   <span id="music-label">Birthday Tune</span>
-  <button id="music-toggle">Play ▶</button>
+  <button type="button" id="music-toggle">Play ▶</button>
 </div>
 
 <canvas id="confetti-canvas"></canvas>
@@ -38,7 +38,7 @@
       <span class="age-label">Years</span>
     </div>
   </div>
-  <button class="sparkle-btn" onclick="launchConfetti()">🎉 Celebrate!</button>
+  <button type="button" class="sparkle-btn" onclick="launchConfetti()">🎉 Celebrate!</button>
 </section>
 
 <!-- ═══════════════════ COUNTDOWN ═══════════════════ -->
@@ -234,16 +234,16 @@
     </div><!-- /stage -->
 
     <!-- Navigation arrows -->
-    <button class="slide-nav slide-prev" onclick="changeSlide(-1)" aria-label="Previous photo">&#8592;</button>
-    <button class="slide-nav slide-next" onclick="changeSlide(1)"  aria-label="Next photo">&#8594;</button>
+    <button type="button" class="slide-nav slide-prev" onclick="changeSlide(-1)" aria-label="Previous photo">&#8592;</button>
+    <button type="button" class="slide-nav slide-next" onclick="changeSlide(1)"  aria-label="Next photo">&#8594;</button>
   </div><!-- /wrapper -->
 
   <!-- Controls row -->
   <div class="slide-controls">
-    <button class="ctrl-btn active" id="play-btn" onclick="toggleAutoplay()">⏸ Pause</button>
+    <button type="button" type="button" class="ctrl-btn active" id="play-btn" onclick="toggleAutoplay()">⏸ Pause</button>
     <span class="slide-counter" id="slide-counter">1 / 18</span>
-    <button class="ctrl-btn" onclick="changeSlide(-1)">&#8592; Prev</button>
-    <button class="ctrl-btn" onclick="changeSlide(1)">Next &#8594;</button>
+    <button type="button" class="ctrl-btn" onclick="changeSlide(-1)">&#8592; Prev</button>
+    <button type="button" class="ctrl-btn" onclick="changeSlide(1)">Next &#8594;</button>
   </div>
 
   <!-- Dot navigation -->
