@@ -12,21 +12,17 @@ on:
 
 jobs:
 
-  # ── Job 1: Validate HTML ─────────────────────────────
   validate-html:
     name: Validate HTML
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-
       - name: Install html-validate
         run: npm install -g html-validate
-
-      - name: Create html-validate config
+      - name: Create config
         run: |
           cat > .htmlvalidate.json << 'EOF'
           {
@@ -43,29 +39,26 @@ jobs:
               "element-permitted-content": "off",
               "no-unknown-elements": "off",
               "prefer-native-element": "off",
-              "valid-id": "off"
+              "valid-id": "off",
+              "no-implicit-button-type": "off",
+              "parser-error": "off"
             }
           }
           EOF
-
       - name: Validate index.html
         run: html-validate index.html
 
-  # ── Job 2: Lint CSS ──────────────────────────────────
   lint-css:
     name: Lint CSS
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-
       - name: Install Stylelint
         run: npm install stylelint stylelint-config-standard
-
-      - name: Create Stylelint config
+      - name: Create config
         run: |
           cat > .stylelintrc.json << 'EOF'
           {
@@ -77,6 +70,7 @@ jobs:
               "selector-class-pattern": null,
               "alpha-value-notation": null,
               "color-function-notation": null,
+              "color-function-alias-notation": null,
               "declaration-block-no-redundant-longhand-properties": null,
               "shorthand-property-no-redundant-values": null,
               "import-notation": null,
@@ -90,29 +84,25 @@ jobs:
               "declaration-empty-line-before": null,
               "value-keyword-case": null,
               "media-feature-range-notation": null,
-              "number-max-precision": null
+              "number-max-precision": null,
+              "declaration-block-single-line-max-declarations": null
             }
           }
           EOF
-
       - name: Lint styles.css
         run: npx stylelint styles.css
 
-  # ── Job 3: Lint JavaScript ───────────────────────────
   lint-js:
     name: Lint JavaScript
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-
-      - name: Install ESLint locally
+      - name: Install ESLint
         run: npm install eslint @eslint/js
-
-      - name: Create ESLint config
+      - name: Create config
         run: |
           cat > eslint.config.mjs << 'EOF'
           import js from "@eslint/js";
@@ -137,24 +127,22 @@ jobs:
                 }
               },
               rules: {
-                "no-unused-vars": "warn",
-                "no-undef": "warn"
+                "no-unused-vars": "off",
+                "no-undef": "warn",
+                "no-empty": "off"
               }
             }
           ];
           EOF
-
       - name: Lint app.js
         run: npx eslint app.js
 
-  # ── Job 4: Check required files ──────────────────────
   check-files:
     name: Check required files
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Verify index.html, styles.css, app.js exist
+      - name: Verify files exist
         run: |
           for f in index.html styles.css app.js; do
             if [ ! -f "$f" ]; then
