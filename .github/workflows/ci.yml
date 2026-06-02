@@ -89,4 +89,4 @@ jobs:
       - name: Show file size
         run: |
           echo "index.html size:"
-          wc -c index.html
+          stat -c%s index.html
