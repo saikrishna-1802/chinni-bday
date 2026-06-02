@@ -740,14 +740,18 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
 <!-- ══ SHAKE GATE ══ -->
 <div id="shakeGate">
   <div class="shake-emoji">📱</div>
-  <p class="shake-title">One More Thing</p>
-  <p class="shake-msg">Shake your phone 3 times<br>to reveal your surprise</p>
-  <div class="shake-dots">
+  <p class="shake-title">Almost There</p>
+  <p class="shake-msg" id="shakeMsg">Shake your phone 3 times<br>to reveal your surprise</p>
+  <div class="shake-dots" id="shakeDots">
     <div class="shake-dot" id="sd0"></div>
     <div class="shake-dot" id="sd1"></div>
     <div class="shake-dot" id="sd2"></div>
   </div>
-  <p class="shake-hint">shake · shake · shake</p>
+  <!-- iOS needs a tap to grant motion permission -->
+  <button id="shakePermBtn" style="display:none;margin-top:0.5rem;padding:14px 36px;background:linear-gradient(135deg,rgba(212,96,122,0.8),rgba(106,80,168,0.8));border:1px solid rgba(255,255,255,0.2);border-radius:999px;color:white;font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;cursor:pointer;" onclick="requestMotionPermission()">Allow Motion & Shake 📱</button>
+  <!-- Desktop button -->
+  <button id="desktopRevealBtn" style="display:none;margin-top:0.5rem;padding:14px 36px;background:linear-gradient(135deg,rgba(212,96,122,0.8),rgba(106,80,168,0.8));border:1px solid rgba(255,255,255,0.2);border-radius:999px;color:white;font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;cursor:pointer;" onclick="unlockExperience()">Reveal My Surprise ✨</button>
+  <p class="shake-hint" id="shakeHint">shake · shake · shake</p>
 </div>
 
 <canvas id="starCanvas"></canvas>
@@ -759,9 +763,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
 <canvas id="confettiCanvas"></canvas>
 
 <!-- ── INTRO ── -->
-<div id="intro">
+<div id="intro" style="display:none">
 
-  <div id="introStage1" class="intro-stage active">
+  <div id="introStage1" class="intro-stage">
     <div class="intro-quote">
       For nineteen years,<br>
       the world has been brighter<br>
@@ -784,7 +788,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
 
       <div class="letter-sign">
         With all our love,<br>
-        Akka "&amp;" Bava 🌸
+        Akka & Bava 🌸
       </div>
     </div>
   </div>
@@ -834,7 +838,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
   <button class="lbnav" id="lb-next" onclick="lbNav(1)">→</button>
   <div id="lb-inner">
     <div id="lb-frame">
-      <img id="lb-img" src="text" alt="" style="display:none">
+      <img id="lb-img" src="" alt="" style="display:none">
       <div id="lb-frame-ph"></div>
       <div id="lb-frame-label"><span id="lb-label-txt"></span></div>
     </div>
@@ -1629,51 +1633,40 @@ function showStage(i){
   }
 }
 
-setTimeout(()=>showStage(1),6000);
+// All intro stage timers — called only AFTER shake unlock
+function startIntroSequence(){
+  showStage(0); // start from stage 1 (index 0)
 
-setTimeout(()=>showStage(2),12000);
+  setTimeout(()=>showStage(1), 6000);
 
-setTimeout(() => {
+  setTimeout(()=>showStage(2), 12000);
 
-  showStage(2);
+  setTimeout(() => {
+    showStage(2);
+    const story = document.getElementById('storySequence');
+    const messages = [
+      "Once upon a time, a little star arrived... ✨",
+      "She filled every room with laughter 🌸",
+      "She grew stronger with every passing year 💕",
+      "She became someone everyone looks up to 🌷",
+      "And today, she turns eighteen... 🎂",
+      "This is her story ❤️"
+    ];
+    let idx = 0;
+    story.textContent = messages[0];
+    const timer = setInterval(()=>{
+      idx++;
+      if(idx >= messages.length){
+        clearInterval(timer);
+        setTimeout(()=>showStage(3), 1500);
+        return;
+      }
+      story.textContent = messages[idx];
+    }, 4000);
+  }, 18000);
+}
 
-  const story = document.getElementById('storySequence');
-
-  const messages = [
-    "Once upon a time, a little star arrived... ✨",
-    "She filled every room with laughter 🌸",
-    "She grew stronger with every passing year 💕",
-    "She became someone everyone looks up to 🌷",
-    "And today, she turns nineteen... 🎂",
-    "This is her story ❤️"
-  ];
-
-  let idx = 0;
-
-  story.textContent = messages[0];
-
-  const timer = setInterval(()=>{
-
-  idx++;
-
-  if(idx >= messages.length){
-
-    clearInterval(timer);
-
-    setTimeout(() => {
-      showStage(3); // Show SATWIKA screen
-    }, 1500);
-
-    return;
-  }
-
-  story.textContent = messages[idx];
-
-},4000);
-}, 18000);
-
-// Cards + loop are now started by unlockExperience() after shake
-// initCards() and requestAnimationFrame(loop) called there
+// Cards + loop + intro are now started by unlockExperience() after shake
 
 /* ══════════════════════════════════════════════
    KEYWORD GATE
@@ -1745,53 +1738,55 @@ function showShakeScreen(){
   const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   if(!isMobile){
-    // Desktop — skip shake entirely, show a click button
-    addDesktopShakeFallback();
+    // Desktop — show reveal button immediately, no shake needed
+    document.getElementById('shakeMsg').innerHTML = 'Click below to reveal<br>your surprise 🎁';
+    document.getElementById('shakeDots').style.display = 'none';
+    document.getElementById('shakeHint').style.display = 'none';
+    document.querySelector('.shake-emoji').textContent = '🎁';
+    document.getElementById('desktopRevealBtn').style.display = 'block';
     return;
   }
 
-  // Mobile — request permission on iOS 13+
+  // iOS 13+ needs explicit permission granted via a user tap
   if(typeof DeviceMotionEvent !== 'undefined' &&
      typeof DeviceMotionEvent.requestPermission === 'function'){
-    DeviceMotionEvent.requestPermission()
-      .then(p=>{
-        if(p==='granted') window.addEventListener('devicemotion', onShake);
-        else addDesktopShakeFallback();
-      })
-      .catch(()=>addDesktopShakeFallback());
-  } else if(typeof DeviceMotionEvent !== 'undefined'){
-    window.addEventListener('devicemotion', onShake);
+    // Show the permission button — must be tapped directly by user
+    document.getElementById('shakeMsg').innerHTML = 'Tap below to allow motion,<br>then shake 3 times!';
+    document.getElementById('shakePermBtn').style.display = 'block';
+    document.getElementById('shakeHint').style.display = 'none';
   } else {
-    addDesktopShakeFallback();
+    // Android / other mobile — start listening directly
+    window.addEventListener('devicemotion', onShake);
   }
 }
 
-function addDesktopShakeFallback(){
-  const sg = document.getElementById('shakeGate');
-  // Update copy for desktop
-  sg.querySelector('.shake-emoji').textContent = '🎁';
-  sg.querySelector('.shake-msg').innerHTML = "You're on a laptop — no shaking needed!<br>Click the button below to reveal your surprise";
-  sg.querySelector('.shake-hint').style.display = 'none';
-
-  // Hide dots, show a button instead
-  document.querySelector('.shake-dots').style.display = 'none';
-
-  const btn = document.createElement('button');
-  btn.textContent = 'Reveal My Surprise ✨';
-  btn.style.cssText = `
-    margin-top:0.5rem;padding:16px 44px;
-    background:linear-gradient(135deg,rgba(212,96,122,0.8),rgba(106,80,168,0.8));
-    border:1px solid rgba(255,255,255,0.2);border-radius:999px;
-    color:white;font-family:'Cinzel',serif;font-size:0.7rem;
-    letter-spacing:0.35em;text-transform:uppercase;
-    cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;
-    box-shadow:0 8px 30px rgba(212,96,122,0.3);
-  `;
-  btn.onmouseover = ()=>{ btn.style.transform='scale(1.06)'; btn.style.boxShadow='0 12px 40px rgba(212,96,122,0.5)'; };
-  btn.onmouseout  = ()=>{ btn.style.transform='scale(1)';    btn.style.boxShadow='0 8px 30px rgba(212,96,122,0.3)';  };
-  btn.onclick = ()=>unlockExperience();
-  sg.appendChild(btn);
+function requestMotionPermission(){
+  // This MUST be called directly from a user tap (onclick)
+  DeviceMotionEvent.requestPermission()
+    .then(p=>{
+      if(p === 'granted'){
+        document.getElementById('shakePermBtn').style.display = 'none';
+        document.getElementById('shakeMsg').innerHTML = 'Now shake your phone<br>3 times! 📳';
+        document.getElementById('shakeHint').style.display = 'block';
+        window.addEventListener('devicemotion', onShake);
+      } else {
+        // Permission denied — show tap fallback
+        document.getElementById('shakePermBtn').style.display = 'none';
+        document.getElementById('shakeMsg').innerHTML = 'Permission denied 🙁<br>Tap the dots 3 times instead';
+        document.getElementById('shakeDots').style.cursor = 'pointer';
+        document.querySelectorAll('.shake-dot').forEach(d=>{
+          d.style.cursor='pointer';
+          d.addEventListener('click', registerShake);
+        });
+      }
+    })
+    .catch(()=>{
+      document.getElementById('shakePermBtn').style.display = 'none';
+      document.getElementById('desktopRevealBtn').style.display = 'block';
+    });
 }
+
+function addDesktopShakeFallback(){ /* no-op — handled above */ }
 
 function onShake(e){
   const acc = e.accelerationIncludingGravity;
@@ -1825,15 +1820,18 @@ function registerShake(){
 function unlockExperience(){
   const sg = document.getElementById('shakeGate');
   sg.classList.add('unlocking');
-  // Big confetti burst
   launchConfetti(120);
   setTimeout(()=>{
     sg.style.display='none';
     window.removeEventListener('devicemotion', onShake);
-    // Start the main experience
-    initCards();
-    setTimeout(()=>launchConfetti(60), 1800);
+    // Reveal the intro screen
+    document.getElementById('intro').style.display='flex';
+    // Start background loop (stars, lightning, rain)
     requestAnimationFrame(loop);
+    // Start the cinematic intro sequence
+    startIntroSequence();
+    // Pre-init cards so they're ready when enterWorld() is called
+    initCards();
   }, 800);
 }
 
