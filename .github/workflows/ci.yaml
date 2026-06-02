@@ -1,0 +1,155 @@
+name: CI — Validate & Lint
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+
+  validate-html:
+    name: Validate HTML
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install html-validate
+        run: npm install -g html-validate
+      - name: Create config
+        run: |
+          cat > .htmlvalidate.json << 'EOF'
+          {
+            "extends": ["html-validate:recommended"],
+            "rules": {
+              "no-inline-style": "off",
+              "require-sri": "off",
+              "no-trailing-whitespace": "off",
+              "attr-quotes": "off",
+              "void-style": "off",
+              "no-redundant-role": "off",
+              "svg-focusable": "off",
+              "aria-label-misuse": "off",
+              "element-permitted-content": "off",
+              "no-unknown-elements": "off",
+              "prefer-native-element": "off",
+              "valid-id": "off",
+              "no-implicit-button-type": "off",
+              "parser-error": "off"
+            }
+          }
+          EOF
+      - name: Validate index.html
+        run: html-validate index.html
+
+  lint-css:
+    name: Lint CSS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Stylelint
+        run: npm install stylelint stylelint-config-standard
+      - name: Create config
+        run: |
+          cat > .stylelintrc.json << 'EOF'
+          {
+            "extends": ["stylelint-config-standard"],
+            "rules": {
+              "no-descending-specificity": null,
+              "keyframes-name-pattern": null,
+              "custom-property-pattern": null,
+              "selector-class-pattern": null,
+              "alpha-value-notation": null,
+              "color-function-notation": null,
+              "color-function-alias-notation": null,
+              "declaration-block-no-redundant-longhand-properties": null,
+              "shorthand-property-no-redundant-values": null,
+              "import-notation": null,
+              "function-no-unknown": null,
+              "property-no-unknown": null,
+              "property-no-vendor-prefix": null,
+              "unit-no-unknown": null,
+              "no-empty-source": null,
+              "comment-empty-line-before": null,
+              "rule-empty-line-before": null,
+              "at-rule-empty-line-before": null,
+              "declaration-empty-line-before": null,
+              "value-keyword-case": null,
+              "media-feature-range-notation": null,
+              "number-max-precision": null,
+              "declaration-block-single-line-max-declarations": null
+            }
+          }
+          EOF
+      - name: Lint styles.css
+        run: npx stylelint styles.css
+
+  lint-js:
+    name: Lint JavaScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install ESLint
+        run: npm install eslint @eslint/js
+      - name: Create config
+        run: |
+          cat > eslint.config.mjs << 'EOF'
+          import js from "@eslint/js";
+          export default [
+            js.configs.recommended,
+            {
+              languageOptions: {
+                globals: {
+                  window: "readonly",
+                  document: "readonly",
+                  AudioContext: "readonly",
+                  webkitAudioContext: "readonly",
+                  requestAnimationFrame: "readonly",
+                  cancelAnimationFrame: "readonly",
+                  setTimeout: "readonly",
+                  clearTimeout: "readonly",
+                  setInterval: "readonly",
+                  clearInterval: "readonly",
+                  console: "readonly",
+                  navigator: "readonly",
+                  matchMedia: "readonly"
+                }
+              },
+              rules: {
+                "no-unused-vars": "off",
+                "no-undef": "warn",
+                "no-empty": "off"
+              }
+            }
+          ];
+          EOF
+      - name: Lint app.js
+        run: npx eslint app.js
+
+  check-files:
+    name: Check required files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify files exist
+        run: |
+          for f in index.html styles.css app.js; do
+            if [ ! -f "$f" ]; then
+              echo "MISSING: $f"
+              exit 1
+            else
+              echo "OK: $f ($(wc -c < $f) bytes)"
+            fi
+          done
