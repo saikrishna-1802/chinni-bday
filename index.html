@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+button,input{touch-action:manipulation;}
 :root{
   --blush:#f2c4ce;--rose:#d4607a;--rose-dark:#8a2040;
   --lavender:#c9b8e8;--lav-deep:#6a50a8;
@@ -1536,39 +1537,32 @@ function toggleMusic(){
   if(!musicOn){initA();schedMel();musicOn=true;document.getElementById('mVinyl').classList.add('spin');document.getElementById('mLabel').textContent='Playing'}
   else{stopMel();musicOn=false;document.getElementById('mVinyl').classList.remove('spin');document.getElementById('mLabel').textContent='Play music'}
 }
+// Start music only after unlock, not on very first tap (which is keyword submit)
 let mStarted=false;
-document.addEventListener('click',function f(){
-  if(!mStarted){mStarted=true;toggleMusic();document.removeEventListener('click',f)}
-},{capture:true});
+function tryStartMusic(){
+  if(!mStarted && !document.getElementById('keyGate').style.display === '' ){
+    mStarted=true; toggleMusic();
+  }
+}
+// Will be triggered by unlockExperience instead
+
 
 /* ══════════════════════════════════════════════
    ENTER WORLD
 ══════════════════════════════════════════════ */
 function enterWorld(){
-
   document.getElementById('intro').classList.add('gone');
-
   setTimeout(()=>{
-
     document.getElementById('intro').style.display='none';
-
-    const w=document.getElementById('world');
+    const w = document.getElementById('world');
     w.classList.add('active');
-
-    if(!worldVisible){
-      worldVisible=true;
-
-      cardData.forEach((s,i)=>{
-        setTimeout(()=>{
-          s.opacity=0;
-          s.entering=true;
-        },i*100);
-      });
-    }
-
-  },800);
+    // Always trigger card entry animation
+    worldVisible = true;
+    cardData.forEach((s,i)=>{
+      setTimeout(()=>{ s.opacity=0; s.entering=true; }, i*100);
+    });
+  }, 800);
 }
-//setTimeout(enterWorld,15000);
 
 /* ══════════════════════════════════════════════
    MAIN LOOP
@@ -1728,8 +1722,8 @@ document.getElementById('keyInput').addEventListener('keydown', e=>{
 let shakeCount = 0;
 let lastShakeTime = 0;
 let lastAcc = {x:0, y:0, z:0};
-const SHAKE_THRESHOLD = 18;
-const SHAKE_COOLDOWN  = 600; // ms between counted shakes
+const SHAKE_THRESHOLD = 12;  // lower = easier to trigger
+const SHAKE_COOLDOWN  = 800; // ms between counted shakes
 
 function showShakeScreen(){
   const sg = document.getElementById('shakeGate');
@@ -1761,7 +1755,6 @@ function showShakeScreen(){
 }
 
 function requestMotionPermission(){
-  // This MUST be called directly from a user tap (onclick)
   DeviceMotionEvent.requestPermission()
     .then(p=>{
       if(p === 'granted'){
@@ -1769,21 +1762,26 @@ function requestMotionPermission(){
         document.getElementById('shakeMsg').innerHTML = 'Now shake your phone<br>3 times! 📳';
         document.getElementById('shakeHint').style.display = 'block';
         window.addEventListener('devicemotion', onShake);
+        // Also allow tapping the dots as backup
+        enableDotTap();
       } else {
-        // Permission denied — show tap fallback
+        enableDotTap();
         document.getElementById('shakePermBtn').style.display = 'none';
-        document.getElementById('shakeMsg').innerHTML = 'Permission denied 🙁<br>Tap the dots 3 times instead';
-        document.getElementById('shakeDots').style.cursor = 'pointer';
-        document.querySelectorAll('.shake-dot').forEach(d=>{
-          d.style.cursor='pointer';
-          d.addEventListener('click', registerShake);
-        });
+        document.getElementById('shakeMsg').innerHTML = 'Tap each dot 3 times<br>to continue 👆';
       }
     })
     .catch(()=>{
       document.getElementById('shakePermBtn').style.display = 'none';
       document.getElementById('desktopRevealBtn').style.display = 'block';
     });
+}
+
+function enableDotTap(){
+  // Only attach to first dot — registerShake chains to the next
+  const first = document.getElementById('sd0');
+  first.style.cursor = 'pointer';
+  first.addEventListener('click', registerShake, {once:true});
+  document.getElementById('shakeMsg').innerHTML = 'Tap the dots one by one<br>to unlock 👆';
 }
 
 function addDesktopShakeFallback(){ /* no-op — handled above */ }
@@ -1805,16 +1803,14 @@ function onShake(e){
 
 function registerShake(){
   if(shakeCount >= 3) return;
-  // Light up a dot
-  document.getElementById(`sd${shakeCount}`).classList.add('lit');
+  const dot = document.getElementById(`sd${shakeCount}`);
+  dot.classList.add('lit');
   shakeCount++;
-
-  // Small haptic if supported
   if(navigator.vibrate) navigator.vibrate(80);
-
-  if(shakeCount >= 3){
-    setTimeout(unlockExperience, 500);
-  }
+  // Re-attach listener to next dot for tap fallback
+  const nextDot = document.getElementById(`sd${shakeCount}`);
+  if(nextDot) nextDot.addEventListener('click', registerShake, {once:true});
+  if(shakeCount >= 3) setTimeout(unlockExperience, 500);
 }
 
 function unlockExperience(){
@@ -1822,16 +1818,17 @@ function unlockExperience(){
   sg.classList.add('unlocking');
   launchConfetti(120);
   setTimeout(()=>{
-    sg.style.display='none';
+    sg.style.display = 'none';
     window.removeEventListener('devicemotion', onShake);
-    // Reveal the intro screen
-    document.getElementById('intro').style.display='flex';
-    // Start background loop (stars, lightning, rain)
+    // Show intro and start background
+    document.getElementById('intro').style.display = 'flex';
     requestAnimationFrame(loop);
-    // Start the cinematic intro sequence
-    startIntroSequence();
-    // Pre-init cards so they're ready when enterWorld() is called
+    // Init cards now so they're ready when enterWorld() fires
     initCards();
+    // Start intro cinematic sequence
+    startIntroSequence();
+    // Start music (user gesture has already happened via button tap)
+    if(!mStarted){ mStarted=true; toggleMusic(); }
   }, 800);
 }
 
@@ -1849,9 +1846,9 @@ document.getElementById('lb-inner').addEventListener('touchend', e=>{
   lbTouchX = null;
 });
 
-// Prevent double-tap zoom on buttons on mobile
+// Prevent double-tap zoom on mobile without blocking click events
 document.querySelectorAll('button').forEach(b=>{
-  b.addEventListener('touchend', e=>e.preventDefault());
+  b.style.touchAction = 'manipulation';
 });
 
 </script>
