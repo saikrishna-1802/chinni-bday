@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday Satwika! 🎂</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script src="app.js"></script>
+
+</head>
+<body>
+
+<!-- ── MUSIC PLAYER (floating) ── -->
+<div id="music-player" onclick="toggleMusic()">
+  <span id="music-icon">🎵</span>
+  <span id="music-label">Birthday Tune</span>
+  <button type="button" id="music-toggle">Play ▶</button>
+</div>
+
+<canvas id="confetti-canvas"></canvas>
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<section class="hero">
+  <span class="floating-emoji">🌸</span>
+  <span class="floating-emoji">🎀</span>
+  <span class="floating-emoji">✨</span>
+  <span class="floating-emoji">🌷</span>
+  <span class="floating-emoji">🎊</span>
+  <span class="floating-emoji">💖</span>
+  <div class="tag">🎂 A Very Special Day</div>
+  <h1 class="hero-name">Satwika</h1>
+  <p class="hero-subtitle">Happy Birthday, beautiful soul</p>
+  <div class="date-badge">🗓️ &nbsp; June 6, 2007</div>
+  <div class="age-reveal">
+    <div class="age-circle">
+      <span class="age-number" id="age-display">18</span>
+      <span class="age-label">Years</span>
+    </div>
+  </div>
+  <button type="button" class="sparkle-btn" onclick="launchConfetti()">🎉 Celebrate!</button>
+</section>
+
+<!-- ═══════════════════ COUNTDOWN ═══════════════════ -->
+<section class="countdown-section">
+  <p class="section-label">Counting down to the big day</p>
+  <h2 class="section-title" id="countdown-heading">Days Until Birthday</h2>
+  <div class="countdown-grid">
+    <div class="countdown-unit"><div class="countdown-box" id="cd-days">--</div><span>Days</span></div>
+    <div class="countdown-unit"><div class="countdown-box" id="cd-hours">--</div><span>Hours</span></div>
+    <div class="countdown-unit"><div class="countdown-box" id="cd-mins">--</div><span>Minutes</span></div>
+    <div class="countdown-unit"><div class="countdown-box" id="cd-secs">--</div><span>Seconds</span></div>
+  </div>
+  <p class="birthday-msg" id="birthday-message"></p>
+</section>
+
+<!-- ═══════════════════ SLIDESHOW ═══════════════════ -->
+<section class="slideshow-section">
+  <p class="section-label">📸 Family Memories</p>
+  <h2 class="section-title">A journey through the years</h2>
+  <p class="slideshow-subtitle">Moments that made our hearts full — all for you, Satwika 🌸</p>
+
+  <div class="slideshow-wrapper">
+    <div class="slideshow-stage" id="stage">
+
+      <!--
+      ╔══════════════════════════════════════════════════════╗
+      ║  HOW TO ADD YOUR REAL PHOTOS                        ║
+      ║                                                      ║
+      ║  For each slide below, replace the entire           ║
+      ║  <div class="slide-placeholder">...</div>           ║
+      ║  block with:                                        ║
+      ║    <img src="YOUR_PHOTO_FILE.jpg" alt="...">        ║
+      ║                                                      ║
+      ║  Put the photo files in the same folder as this     ║
+      ║  HTML file, then open the HTML in your browser.     ║
+      ║                                                      ║
+      ║  You can also update data-caption & data-year       ║
+      ║  on each slide to match the memory!                 ║
+      ╚══════════════════════════════════════════════════════╝
+      -->
+
+      <div class="slide active" data-caption="Our little star arrives ✨" data-year="2007 · Newborn">
+        <div class="slide-placeholder">
+          <div class="placeholder-num">01</div>
+          <div class="placeholder-label">📂 Add photo here</div>
+          <div class="placeholder-caption">The day Satwika came into our world and changed everything</div>
+        </div>
+        <!-- Replace above div with: <img src="photo01.jpg" alt="Satwika newborn 2007"> -->
+      </div>
+
+      <div class="slide" data-caption="First birthday joy 🎂" data-year="2008 · Age 1">
+        <div class="slide-placeholder">
+          <div class="placeholder-num">02</div>
+          <div class="placeholder-label">📂 Add photo here</div>
+          <div class="placeholder-caption">The very first birthday — the beginning of many celebrations</div>
+        </div>
+        <!-- Replace above div with: <img src="photo02.jpg" alt="Satwika 1st birthday"> -->
+      </div>
+
+      <div class="slide" data-caption="Toddler adventures 🌈" data-year="2009 · Age 2">
+        <div class="slide-placeholder">
+          <div class="placeholder-num">03</div>
+          <div class="placeholder-label">📂 Add photo here</div>
+          <div class="placeholder-caption">Exploring the world with those bright, curious eyes</div>
+        </div>
+      </div>
+
+      <div class="slide" data-caption="Surrounded by love 💖" data-year="2010 · Age 3">
+        <div class="slide-placeholder">
+          <div class="placeholder-num">04</div>
+          <div class="placeholder-label">📂 Add photo here</div>
+          <div class="placeholder-caption">Always held close, always cherished</div>
+        </div>
+      </div>
+
+      <div class="slide" data-caption="Playful and free 🌸" data-year="2011 · Age 4">
+        <div class="slide-placeholder">
+          <div class="placeholder-num">05</div>
+          <div class="placeholder-label">📂 Add photo here</div>
+          <div class="placeholder-caption">Laughter was always her favourite language</div>
+        </div>
+      </div>
+
+      <div class="slide" data-caption="School days begin 🎒" data-year="2012 · Age 5">
+        <div class="slide-placeholder">
+          <div class="placeholder-num">06</div>
+          <div class="placeholder-label">📂 Add photo here</div>
+          <div class="placeholder-caption">A new chapter, full of wonder and curiosity</div>
+        </div>
+      </div>
+
+      <div class="slide" data-caption="Growing gracefully 🌷" data-year="2013 · Age 6">
+        <div class="slide-placeholder">
+          <div class="placeholder-num">07</div>
+          <div class="placeholder-label">📂 Add photo here</div>
+          <div class="placeholder-caption">Every year more beautiful than the last</div>
+        </div>
+      </div>
+
+      <div class="slide" data-caption="Holiday magic 🎊" data-year="2014 · Age 7">
+        <div class="slide-placeholder">
+          <div class="placeholder-num">08</div>
+          <div class="placeholder-label">📂 Add photo here</div>
+          <div class="placeholder-caption">Celebrations were always brighter with her around</div>
+        </div>
+      </div>
+
+      <div class="slide" data-caption="Endless smiles 😊" data-year="2015 · Age 8">
+        <div class="slide-placeholder">
+          <div class="placeholder-num">09</div>
+          <div class="placeholder-label">📂 Add photo here</div>
+          <div class="placeholder-caption">That smile that lights up every single room</div>
+        </div>
+      </div>
+
+      <div class="slide" data-caption="Adventures together 🚀" data-year="2016 · Age 9">
+        <div class="slide-placeholder">
+          <div class="placeholder-num">10</div>
+          <div class="placeholder-label">📂 Add photo here</div>
+          <div class="placeholder-caption">Every trip was better because you were there</div>
+        </div>
+      </div>
+
+      <div class="slide" data-caption="A decade of magic ✨" data-year="2017 · Age 10">
+        <div class="slide-placeholder">
+          <div class="placeholder-num">11</div>
+          <div class="placeholder-label">📂 Add photo here</div>
+          <div class="placeholder-caption">Ten whole years of pure joy and magic</div>
+        </div>
+      </div>
+
+      <div class="slide" data-caption="Finding her voice 💪" data-year="2018 · Age 11">
+        <div class="slide-placeholder">
+          <div class="placeholder-num">12</div>
+          <div class="placeholder-label">📂 Add photo here</div>
+          <div class="placeholder-caption">Bold, brave, and beautifully herself</div>
+        </div>
+      </div>
+
+      <div class="slide" data-caption="Teenage years begin 🌟" data-year="2019 · Age 12">
+        <div class="slide-placeholder">
+          <div class="placeholder-num">13</div>
+          <div class="placeholder-label">📂 Add photo here</div>
+          <div class="placeholder-caption">A new chapter, full of dreams and possibilities</div>
+        </div>
+      </div>
+
+      <div class="slide" data-caption="Blooming beautifully 🌺" data-year="2021 · Age 14">
+        <div class="slide-placeholder">
+          <div class="placeholder-num">14</div>
+          <div class="placeholder-label">📂 Add photo here</div>
+          <div class="placeholder-caption">Blossoming into someone truly extraordinary</div>
+        </div>
+      </div>
+
+      <div class="slide" data-caption="Family forever 💕" data-year="2022 · Age 15">
+        <div class="slide-placeholder">
+          <div class="placeholder-num">15</div>
+          <div class="placeholder-label">📂 Add photo here</div>
+          <div class="placeholder-caption">No matter how many years — always ours, always loved</div>
+        </div>
+      </div>
+
+      <div class="slide" data-caption="On the cusp of greatness 🌠" data-year="2023 · Age 16">
+        <div class="slide-placeholder">
+          <div class="placeholder-num">16</div>
+          <div class="placeholder-label">📂 Add photo here</div>
+          <div class="placeholder-caption">The world has no idea what's coming — you!</div>
+        </div>
+      </div>
+
+      <div class="slide" data-caption="Almost 18 — unstoppable 🔥" data-year="2024 · Age 17">
+        <div class="slide-placeholder">
+          <div class="placeholder-num">17</div>
+          <div class="placeholder-label">📂 Add photo here</div>
+          <div class="placeholder-caption">Getting ready to take on the whole world</div>
+        </div>
+      </div>
+
+      <div class="slide" data-caption="18 & Absolutely Radiant 👑" data-year="2025 · Age 18">
+        <div class="slide-placeholder">
+          <div class="placeholder-num">18</div>
+          <div class="placeholder-label">📂 Add photo here</div>
+          <div class="placeholder-caption">18 years of pure magic — Happy Birthday, Satwika! 🎂</div>
+        </div>
+      </div>
+
+      <!-- Dynamic caption overlay -->
+      <div class="slide-caption-overlay">
+        <div class="caption-title" id="caption-title">Our little star arrives ✨</div>
+        <div class="caption-year"  id="caption-year">2007 · Newborn</div>
+      </div>
+    </div><!-- /stage -->
+
+    <!-- Navigation arrows -->
+    <button type="button" class="slide-nav slide-prev" onclick="changeSlide(-1)" aria-label="Previous photo">&#8592;</button>
+    <button type="button" class="slide-nav slide-next" onclick="changeSlide(1)"  aria-label="Next photo">&#8594;</button>
+  </div><!-- /wrapper -->
+
+  <!-- Controls row -->
+  <div class="slide-controls">
+    <button type="button" class="ctrl-btn active" id="play-btn" onclick="toggleAutoplay()">⏸ Pause</button>
+    <span class="slide-counter" id="slide-counter">1 / 18</span>
+    <button type="button" class="ctrl-btn" onclick="changeSlide(-1)">&#8592; Prev</button>
+    <button type="button" class="ctrl-btn" onclick="changeSlide(1)">Next &#8594;</button>
+  </div>
+
+  <!-- Dot navigation -->
+  <div class="slide-dots" id="dots"></div>
+
+  <!-- Thumbnail strip -->
+  <div class="thumb-strip" id="thumb-strip"></div>
+
+  <!-- Instructions for adding photos -->
+  <div class="photo-tip">
+    <div class="photo-tip-title">📂 How to add Satwika's real photos</div>
+    <div class="photo-tip-body">
+      <strong style="color:rgba(255,255,255,0.75)">Step 1:</strong> Put your photo files (e.g. <code>photo01.jpg</code>, <code>photo02.jpg</code> …) in the <strong style="color:rgba(255,255,255,0.75)">same folder</strong> as this HTML file.<br><br>
+      <strong style="color:rgba(255,255,255,0.75)">Step 2:</strong> Open the HTML in a text editor (Notepad, VS Code, etc.) and find a slide. Replace the <code>&lt;div class="slide-placeholder"&gt;…&lt;/div&gt;</code> block with <code>&lt;img src="photo01.jpg" alt="Memory 2007"&gt;</code>.<br><br>
+      <strong style="color:rgba(255,255,255,0.75)">Step 3:</strong> Update the <code>data-caption</code> and <code>data-year</code> on each <code>&lt;div class="slide"&gt;</code> to match the memory — these appear as the caption overlay.<br><br>
+      <strong style="color:rgba(255,255,255,0.75)">Tip:</strong> You can add as many slides as you like — just copy a <code>&lt;div class="slide"&gt;</code> block and update the content. The dots and thumbnails will update automatically! 🎉
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ MESSAGE ═══════════════════ -->
+<section class="message-section">
+  <p class="section-label">From the heart</p>
+  <h2 class="section-title">A special wish for you</h2>
+  <div class="message-card">
+    <p class="message-text">
+      Dearest Satwika, on this beautiful day we celebrate not just another year, but the incredible person you are growing to be. Your laughter brightens every room, your kindness touches every heart, and your spirit inspires everyone around you. May this year bring you joy beyond measure, dreams that take flight, and adventures that leave you breathless with wonder.
+      <br><br>
+      You are loved more than words can ever say. Here's to you — and all the amazing things still to come. 🌸
+    </p>
+    <div class="heart-divider">💖</div>
+    <p class="message-from">With all the love in the world — your family 🎀</p>
+  </div>
+</section>
+
+<!-- ═══════════════════ WISHES ═══════════════════ -->
+<section class="wishes-section">
+  <p class="section-label">Birthday blessings</p>
+  <h2 class="section-title">Wishing you all of this</h2>
+  <div class="wishes-grid">
+    <div class="wish-card"><span class="wish-icon">🌟</span><div class="wish-title">Endless Joy</div><div class="wish-desc">May every morning greet you with reasons to smile and every night end with a grateful heart.</div></div>
+    <div class="wish-card"><span class="wish-icon">🚀</span><div class="wish-title">Big Dreams</div><div class="wish-desc">May your ambitions soar sky-high and the universe conspire to help you reach every single one.</div></div>
+    <div class="wish-card"><span class="wish-icon">💖</span><div class="wish-title">True Love</div><div class="wish-desc">May you always be surrounded by people who cherish you exactly as you are, unconditionally.</div></div>
+    <div class="wish-card"><span class="wish-icon">🌈</span><div class="wish-title">Good Health</div><div class="wish-desc">May your body be strong, your mind be clear, and your spirit glow with radiant energy always.</div></div>
+    <div class="wish-card"><span class="wish-icon">🎯</span><div class="wish-title">Success</div><div class="wish-desc">May every goal you set become a milestone you cross, and every effort bring deserved rewards.</div></div>
+    <div class="wish-card"><span class="wish-icon">✨</span><div class="wish-title">Magic Moments</div><div class="wish-desc">May life surprise you with unexpected delights, serendipitous encounters, and beautiful memories.</div></div>
+  </div>
+</section>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer>
+  <div class="balloons">
+    <span class="balloon">🎈</span><span class="balloon">🎉</span>
+    <span class="balloon">🎂</span><span class="balloon">🎊</span><span class="balloon">🎈</span>
+  </div>
+  <p class="footer-name">Happy Birthday, Satwika!</p>
+  <p class="footer-year">June 6, 2007 – Forever loved ✨</p>
+  <p style="margin-top:1rem;font-size:0.75rem;opacity:0.4;">Made with 💖 just for you</p>
+</footer>
+
+
+</body>
+</html>
