@@ -718,7 +718,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
 </head>
 <body>
 
-
+<!-- ══ KEYWORD GATE ══ -->
+<div id="keyGate">
+  <div class="key-stars" id="keyStars"></div>
+  <div class="key-lock-icon">🔒</div>
+  <p class="key-title">A Secret Awaits</p>
+  <p class="key-sub">Type the magic phrase to unlock<br>something made just for you</p>
+  <div class="key-input-wrap">
+    <input id="keyInput" type="text" placeholder="enter the secret phrase…" autocomplete="off" autocorrect="off" spellcheck="false">
+  </div>
+  <button id="keyBtn" onclick="checkKey()">Unlock ✨</button>
+  <p class="key-wrong-msg" id="keyWrongMsg">That's not quite right — try again 🌸</p>
+  <p class="key-hint">case insensitive · sent with love</p>
+</div>
 
 <!-- ══ SHAKE GATE ══ -->
 <div id="shakeGate">
@@ -1679,7 +1691,7 @@ function startIntroSequence(){
   }
 })();
 
-const SECRET = 'love you akka and bava'; // normalised
+const SECRET = 'PVPHS'; // normalised
 
 function checkKey(){
   const val = document.getElementById('keyInput').value.trim().toLowerCase();
